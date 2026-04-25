@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* SAFE COLOR (hindari error lab) */
+* {
+  color: #000;
+}
+
+/* COMPONENT */
+.input {
+  border: 1px solid #ccc;
+  padding: 8px;
+  width: 100%;
+  border-radius: 6px;
+}
+
+
+
+.btn2 {
+  background: #01e2;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.btn {
+  background: #2563eb;
+  color: black;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
