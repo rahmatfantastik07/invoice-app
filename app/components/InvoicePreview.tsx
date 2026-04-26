@@ -26,29 +26,35 @@ export default function InvoicePreview({ data }: any) {
 
     const imgData = canvas.toDataURL("image/png");
 
+    // 🔥 GANTI KE PORTRAIT
     const pdf = new jsPDF({
-      orientation: "landscape",
+      orientation: "portrait",
       unit: "mm",
       format: "a4",
     });
 
-    const pageWidth = 297;
-    const pageHeight = 210;
+    const pageWidth = 210;
+    const pageHeight = 297;
 
-    const imgRatio = canvas.width / canvas.height;
-    const pageRatio = pageWidth / pageHeight;
+    const margin = 15;
 
-    let renderWidth = pageWidth;
-    let renderHeight = pageHeight;
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
 
-    if (imgRatio > pageRatio) {
-      renderHeight = pageWidth / imgRatio;
-    } else {
-      renderWidth = pageHeight * imgRatio;
+    const maxWidth = pageWidth - margin * 2;
+    const maxHeight = pageHeight - margin * 2;
+
+    let renderWidth = maxWidth;
+    let renderHeight = (imgHeight * maxWidth) / imgWidth;
+
+    // 🔥 JAGA AGAR TIDAK TERPOTONG
+    if (renderHeight > maxHeight) {
+      renderHeight = maxHeight;
+      renderWidth = (imgWidth * maxHeight) / imgHeight;
     }
 
     const x = (pageWidth - renderWidth) / 2;
-    const y = (pageHeight - renderHeight) / 2;
+    const y = margin; // 🔥 jangan center vertikal → biar natural seperti dokumen
 
     pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
 
@@ -65,23 +71,13 @@ export default function InvoicePreview({ data }: any) {
         </button>
       </div>
 
-      {/* 🔥 WRAPPER RESPONSIVE */}
+      {/* INVOICE WRAPPER (RESPONSIVE FIX) */}
       <div className="preview-wrapper">
         <div className="preview-scale">
 
-          {/* 🔥 AREA ASLI (JANGAN DIUBAH) */}
           <div
             ref={printRef}
-            style={{
-              width: "297mm",
-              minHeight: "210mm",
-              padding: "10mm",
-              paddingBottom: "20mm",
-              boxSizing: "border-box",
-              background: "#ffffff",
-              fontFamily: "Arial, sans-serif",
-            }}
-            className="text-sm"
+            className="invoice-paper"
           >
 
             {/* HEADER */}
@@ -97,12 +93,7 @@ export default function InvoicePreview({ data }: any) {
                 {data.logo && (
                   <img
                     src={data.logo}
-                    style={{
-                      height: "50px",
-                      marginBottom: "6px",
-                      objectFit: "contain",
-                      marginLeft: "auto",
-                    }}
+                    className="logo"
                   />
                 )}
 
@@ -126,28 +117,22 @@ export default function InvoicePreview({ data }: any) {
             </div>
 
             {/* TABLE */}
-            <table className="w-full border table-fixed">
+            <table className="preview-table">
               <thead>
-                <tr style={{ background: "#e5e7eb" }}>
-                  <th className="border p-2">Deskripsi</th>
-                  <th className="border p-2 w-16">Qty</th>
-                  <th className="border p-2 w-28">Harga</th>
-                  <th className="border p-2 w-28">Subtotal</th>
+                <tr>
+                  <th>Deskripsi</th>
+                  <th>Qty</th>
+                  <th>Harga</th>
+                  <th>Subtotal</th>
                 </tr>
               </thead>
               <tbody>
                 {(data.items || []).map((item: any, i: number) => (
                   <tr key={i}>
-                    <td className="border p-2 wrap-break-word">
-                      {item.desc || "-"}
-                    </td>
-                    <td className="border p-2 text-center">
-                      {item.qty || 0}
-                    </td>
-                    <td className="border p-2">
-                      {formatRupiah(item.price || 0)}
-                    </td>
-                    <td className="border p-2">
+                    <td>{item.desc || "-"}</td>
+                    <td className="text-center">{item.qty || 0}</td>
+                    <td>{formatRupiah(item.price || 0)}</td>
+                    <td>
                       {formatRupiah(
                         (item.qty || 0) * (item.price || 0)
                       )}
@@ -171,10 +156,7 @@ export default function InvoicePreview({ data }: any) {
             {/* FOOTER */}
             <div className="flex justify-between mt-10 items-end">
               {data.qris && (
-                <img
-                  src={data.qris}
-                  className="h-24 object-contain"
-                />
+                <img src={data.qris} className="qris" />
               )}
 
               {data.signature && (
@@ -182,7 +164,7 @@ export default function InvoicePreview({ data }: any) {
                   <p>Hormat Kami,</p>
                   <img
                     src={data.signature}
-                    className="h-20 mx-auto object-contain"
+                    className="signature"
                   />
                   <p>{data.from?.name || "-"}</p>
                 </div>
@@ -190,13 +172,7 @@ export default function InvoicePreview({ data }: any) {
             </div>
 
             {/* FOOTNOTE */}
-            <div
-              style={{
-                marginTop: "15px",
-                fontSize: "8px",
-                textAlign: "center",
-              }}
-            >
+            <div className="footnote">
               <p>Terima kasih atas kepercayaan Anda 🙏</p>
               <p>Dibuat oleh: {data.from?.name || "-"}</p>
             </div>
