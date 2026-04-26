@@ -89,7 +89,7 @@ const handleDownloadPDF = async () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "60% 40%",
+                gridTemplateColumns: "40% 40%",
                 gap: "20px",
                 alignItems: "start",
                 marginBottom: "20px",
@@ -105,12 +105,12 @@ const handleDownloadPDF = async () => {
 
                 <div style={{ marginTop: "16px" }}>
                   <p className="font-bold">Kepada:</p>
-                  <p>{data.to?.name || "-"}</p>
+                  <strong><p className="text-blue-950">{data.to?.name || "-"}</p></strong>
                   <p>{data.to?.address || "-"}</p>
                   <p>{data.to?.phone || "-"}</p>
                   <p>{data.to?.email || "-"}</p>
                   <p>
-                    dari {(data.to?.fromCity || "-")} ke {(data.to?.toCity || "-")}
+                    dari <strong className="text-blue-950">{(data.to?.fromCity || "-")}</strong> ke <strong className="text-blue-950">{(data.to?.toCity || "-")}</strong>
                   </p>
                 </div>
               </div>
