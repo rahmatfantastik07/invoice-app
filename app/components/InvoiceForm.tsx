@@ -115,7 +115,7 @@ export default function InvoiceForm() {
         {/* 🔥 UPLOAD LOGO */}
         <p className="font-semibold">Upload Logo</p>
         <input
-          type="file" 
+          type="file" className="btn2" 
           onChange={(e) => handleFile(e, "logo")}
         />
 
