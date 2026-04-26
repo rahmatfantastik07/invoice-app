@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
-/* =========================
-   RESET
-   ========================= */
+/* RESET */
 *,
 *::before,
 *::after {
@@ -16,10 +14,7 @@ body {
   color: #111827;
 }
 
-/* =========================
-   LAYOUT
-   ========================= */
-
+/* LAYOUT */
 .max-w-350 {
   max-width: 1200px;
   width: 100%;
@@ -33,18 +28,13 @@ body {
   padding: 12px;
 }
 
-/* desktop */
 @media (min-width: 768px) {
   .grid.md\:grid-cols-2 {
     grid-template-columns: 1fr 1fr;
-    align-items: start;
   }
 }
 
-/* =========================
-   FORM
-   ========================= */
-
+/* FORM */
 .bg-white {
   background: #fff;
   width: 100%;
@@ -62,34 +52,16 @@ body {
   margin-top: 12px;
 }
 
-h2 {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* INPUT */
 .input {
   border: 1px solid #d1d5db;
   padding: 10px;
   width: 100%;
   border-radius: 6px;
   font-size: 14px;
-  background: #fff;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #2563eb;
 }
 
 textarea.input {
   min-height: 80px;
-}
-
-/* FILE */
-input[type="file"] {
-  width: 100%;
-  font-size: 14px;
 }
 
 /* BUTTON */
@@ -109,10 +81,7 @@ input[type="file"] {
   width: 100%;
 }
 
-/* =========================
-   PREVIEW WRAPPER
-   ========================= */
-
+/* PREVIEW */
 .preview-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -125,17 +94,14 @@ input[type="file"] {
   transform-origin: top center;
 }
 
-/* A4 FIX */
+/* DESKTOP FIX */
 .preview-scale > div {
   width: 297mm;
   min-height: 210mm;
   background: white;
 }
 
-/* =========================
-   TABLE
-   ========================= */
-
+/* TABLE */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -144,110 +110,48 @@ table {
 td, th {
   border: 1px solid #d1d5db;
   padding: 6px;
-  word-break: break-word;
   font-size: 12px;
 }
 
-th {
-  background: #e5e7eb;
-}
-
-/* =========================
-   🔥 MOBILE FIX (FORM + PREVIEW)
-   ========================= */
-
+/* MOBILE */
 @media (max-width: 768px) {
 
-  /* GRID tetap 1 kolom */
   .grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* 🔥 FORM FIX UTAMA */
-  .flex {
-    flex-direction: column;
-  }
-
-  /* khusus input berpasangan */
+  /* FORM FIX */
   .flex.gap-2 {
     flex-direction: column !important;
   }
 
-  /* kasih jarak biar gak nempel */
   .flex.gap-2 > * {
     width: 100%;
   }
 
-  /* PREVIEW tetap scaled */
+  /* 🔥 PREVIEW SCALE ONLY VISUAL */
   .preview-scale {
-    transform: scale(0.65);
+    transform: scale(0.6);
   }
 
-  /* header preview */
   .flex.justify-between {
     flex-direction: column !important;
     gap: 10px;
-    align-items: flex-start !important;
   }
 
   .text-right {
     text-align: left !important;
   }
 
-  img {
-    max-width: 120px;
-    height: auto !important;
-  }
-
-  /* table tetap bisa scroll */
   table {
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  /* footer preview */
-  .flex.items-end {
-    flex-direction: column !important;
-    gap: 16px;
-    align-items: flex-start !important;
-  }
-
-  .text-sm {
-    font-size: 14px !important;
-  }
-
-  h1 {
-    font-size: 18px !important;
   }
 }
 
-/* =========================
-   EXTRA SMALL
-   ========================= */
-
+/* EXTRA SMALL */
 @media (max-width: 480px) {
-
   .preview-scale {
     transform: scale(0.5);
-  }
-
-  h1 {
-    font-size: 16px !important;
-  }
-
-  .text-sm {
-    font-size: 13px !important;
-  }
-
-  .input {
-    font-size: 13px;
-    padding: 8px;
-  }
-
-  .btn,
-  .btn2 {
-    font-size: 13px;
-    padding: 8px;
   }
 }
