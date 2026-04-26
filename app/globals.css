@@ -17,8 +17,58 @@ body {
 }
 
 /* =========================
-   INPUT
+   LAYOUT UTAMA
    ========================= */
+
+/* override max-w-350 (biar ga aneh di mobile) */
+.max-w-350 {
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+}
+
+/* grid default mobile */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 10px;
+}
+
+/* desktop jadi 2 kolom */
+@media (min-width: 768px) {
+  .grid.md\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* =========================
+   FORM STYLE
+   ========================= */
+
+.bg-white {
+  background: #ffffff;
+}
+
+.shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.rounded {
+  border-radius: 8px;
+}
+
+/* biar form enak di HP */
+.space-y-3 > * + * {
+  margin-top: 12px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+/* INPUT */
 .input {
   border: 1px solid #d1d5db;
   padding: 10px;
@@ -32,9 +82,7 @@ body {
   border-color: #2563eb;
 }
 
-/* =========================
-   BUTTON
-   ========================= */
+/* BUTTON */
 .btn {
   background: #2563eb;
   color: white;
@@ -46,38 +94,22 @@ body {
 .btn2 {
   background: #10b981;
   color: white;
-  padding: 8px;
+  padding: 10px;
   border-radius: 6px;
   width: 100%;
 }
 
 /* =========================
-   GRID FORM
+   PREVIEW (DESKTOP A4)
    ========================= */
-.invoice-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  max-width: 1200px;
-  margin: auto;
-  padding: 10px;
-}
 
-@media (min-width: 768px) {
-  .invoice-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* =========================
-   PREVIEW DESKTOP (A4)
-   ========================= */
 .flex.justify-center {
   width: 100%;
   overflow-x: auto;
   padding: 10px;
 }
 
+/* A4 container */
 .flex.justify-center > div {
   transform-origin: top center;
 }
@@ -95,28 +127,42 @@ td, th {
 }
 
 /* =========================
-   🔥 MOBILE MODE (REAL RESPONSIVE)
+   🔥 MOBILE MODE (FORM + PREVIEW)
    ========================= */
 @media (max-width: 768px) {
 
-  /* container */
+  /* grid tetap 1 kolom */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* FORM FULL WIDTH */
+  .bg-white {
+    width: 100%;
+  }
+
+  /* PREVIEW FULL WIDTH */
   .flex.justify-center {
     justify-content: center;
     overflow-x: hidden;
-    padding: 10px;
   }
 
-  /* override A4 jadi fleksibel */
+  /* 🔥 override A4 jadi fleksibel */
   .flex.justify-center > div {
     width: 100% !important;
     min-height: auto !important;
     padding: 16px !important;
   }
 
-  /* HEADER jadi vertikal */
+  /* HEADER jadi stack */
   .flex.justify-center > div > div:first-child {
     flex-direction: column !important;
     gap: 10px;
+  }
+
+  /* text kanan jadi kiri */
+  .text-right {
+    text-align: left !important;
   }
 
   /* logo */
@@ -125,19 +171,21 @@ td, th {
     height: auto !important;
   }
 
-  /* text kanan jadi kiri */
-  .text-right {
-    text-align: left !important;
-  }
-
-  /* TABLE scroll horizontal */
+  /* TABLE scroll */
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  /* font */
+  /* footer stack */
+  .flex.justify-between {
+    flex-direction: column !important;
+    gap: 16px;
+    align-items: flex-start !important;
+  }
+
+  /* font nyaman */
   .text-sm {
     font-size: 14px !important;
   }
@@ -146,17 +194,6 @@ td, th {
     font-size: 18px !important;
   }
 
-  /* footer jadi stack */
-  .flex.justify-between {
-    flex-direction: column !important;
-    gap: 16px;
-    align-items: flex-start !important;
-  }
-
-  /* QR & signature */
-  .flex.justify-between img {
-    max-width: 150px;
-  }
 }
 
 /* =========================
@@ -164,12 +201,12 @@ td, th {
    ========================= */
 @media (max-width: 480px) {
 
-  .text-sm {
-    font-size: 13px !important;
-  }
-
   h1 {
     font-size: 16px !important;
+  }
+
+  .text-sm {
+    font-size: 13px !important;
   }
 
   .input {
