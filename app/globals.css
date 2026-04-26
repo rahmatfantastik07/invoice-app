@@ -104,27 +104,23 @@ input[type="file"] {
    PREVIEW WRAPPER
    ========================= */
 
-.preview-wrapper {
+.flex.justify-center {
   width: 100%;
   overflow-x: auto;
+  padding: 10px;
   display: flex;
   justify-content: center;
-  padding: 10px;
-}
-
-/* area scaling */
-.preview-scale {
-  transform-origin: top center;
 }
 
 /* =========================
-   A4 DESKTOP (FIXED - JANGAN DIUBAH)
+   A4 DESKTOP (JANGAN DIUBAH)
    ========================= */
 
-.preview-scale > div {
+.flex.justify-center > div {
   width: 297mm;
   min-height: 210mm;
   background: white;
+  transform-origin: top center;
 }
 
 /* =========================
@@ -148,28 +144,29 @@ th {
 }
 
 /* =========================
-   🔥 RESPONSIVE (AMAN UNTUK PDF)
+   🔥 MOBILE FIX UTAMA
    ========================= */
 
-/* tablet */
-@media (max-width: 1024px) {
-  .preview-scale {
-    transform: scale(0.85);
-  }
-}
-
-/* hp */
 @media (max-width: 768px) {
 
+  /* grid tetap 1 kolom */
   .grid {
     grid-template-columns: 1fr !important;
   }
 
-  .preview-scale {
-    transform: scale(0.65);
+  /* wrapper JANGAN hidden */
+  .flex.justify-center {
+    overflow-x: auto;
   }
 
-  /* header stack */
+  /* 🔥 SOLUSI: FIT WIDTH TANPA SCALE BERLEBIH */
+  .flex.justify-center > div {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 16px !important;
+  }
+
+  /* header jadi stack */
   .flex.justify-between {
     flex-direction: column !important;
     gap: 10px;
@@ -180,24 +177,27 @@ th {
     text-align: left !important;
   }
 
+  /* gambar */
   img {
     max-width: 120px;
     height: auto !important;
   }
 
-  /* table tetap rapi */
+  /* table scroll */
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
+  /* footer */
   .flex.items-end {
     flex-direction: column !important;
     gap: 16px;
     align-items: flex-start !important;
   }
 
+  /* font lebih readable */
   .text-sm {
     font-size: 14px !important;
   }
@@ -207,12 +207,11 @@ th {
   }
 }
 
-/* hp kecil */
-@media (max-width: 480px) {
+/* =========================
+   EXTRA SMALL
+   ========================= */
 
-  .preview-scale {
-    transform: scale(0.5);
-  }
+@media (max-width: 480px) {
 
   h1 {
     font-size: 16px !important;
