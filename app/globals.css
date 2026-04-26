@@ -17,17 +17,15 @@ body {
 }
 
 /* =========================
-   LAYOUT UTAMA
+   LAYOUT
    ========================= */
 
-/* FIX max width */
 .max-w-350 {
   max-width: 1200px;
   width: 100%;
   margin: auto;
 }
 
-/* GRID */
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -35,7 +33,6 @@ body {
   padding: 12px;
 }
 
-/* DESKTOP */
 @media (min-width: 768px) {
   .grid.md\:grid-cols-2 {
     grid-template-columns: 1fr 1fr;
@@ -48,7 +45,7 @@ body {
    ========================= */
 
 .bg-white {
-  background: #ffffff;
+  background: #fff;
 }
 
 .shadow {
@@ -68,7 +65,6 @@ h2 {
   font-weight: 600;
 }
 
-/* INPUT */
 .input {
   border: 1px solid #d1d5db;
   padding: 10px;
@@ -83,25 +79,22 @@ h2 {
   border-color: #2563eb;
 }
 
-/* FILE INPUT (biar gak jelek di HP) */
 input[type="file"] {
   width: 100%;
   font-size: 14px;
 }
 
-/* BUTTON */
 .btn {
   background: #2563eb;
-  color: white;
+  color: #fff;
   padding: 10px;
   border-radius: 6px;
   width: 100%;
-  text-align: center;
 }
 
 .btn2 {
   background: #10b981;
-  color: white;
+  color: #fff;
   padding: 10px;
   border-radius: 6px;
   width: 100%;
@@ -120,13 +113,12 @@ input[type="file"] {
 }
 
 /* =========================
-   A4 KERTAS (DESKTOP)
+   A4 DESKTOP (JANGAN DIUBAH)
    ========================= */
 
 .flex.justify-center > div {
-  width: 210mm;
-  min-height: 297mm;
-  padding: 15mm;
+  width: 297mm;
+  min-height: 210mm;
   background: white;
   transform-origin: top center;
 }
@@ -140,8 +132,7 @@ table {
   width: 100%;
 }
 
-td,
-th {
+td, th {
   border: 1px solid #d1d5db;
   padding: 6px;
   word-break: break-word;
@@ -153,64 +144,60 @@ th {
 }
 
 /* =========================
-   MOBILE MODE
+   🔥 MOBILE FIX UTAMA
    ========================= */
 
 @media (max-width: 768px) {
 
-  /* GRID tetap 1 kolom */
+  /* grid tetap 1 kolom */
   .grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* FORM FULL */
-  .bg-white {
-    width: 100%;
-  }
-
-  /* PREVIEW WRAPPER */
+  /* wrapper JANGAN hidden */
   .flex.justify-center {
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 
-  /* 🔥 SOLUSI UTAMA: SCALE, BUKAN DIRUBAH */
+  /* 🔥 SOLUSI: FIT WIDTH TANPA SCALE BERLEBIH */
   .flex.justify-center > div {
-    transform: scale(0.85);
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 16px !important;
   }
 
-  /* HEADER STACK */
+  /* header jadi stack */
   .flex.justify-between {
     flex-direction: column !important;
     gap: 10px;
     align-items: flex-start !important;
   }
 
-  /* TEXT */
   .text-right {
     text-align: left !important;
   }
 
-  /* IMAGE */
+  /* gambar */
   img {
     max-width: 120px;
     height: auto !important;
   }
 
-  /* TABLE SCROLL */
+  /* table scroll */
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  /* FOOTER STACK */
+  /* footer */
   .flex.items-end {
     flex-direction: column !important;
     gap: 16px;
     align-items: flex-start !important;
   }
 
-  /* FONT */
+  /* font lebih readable */
   .text-sm {
     font-size: 14px !important;
   }
@@ -221,15 +208,10 @@ th {
 }
 
 /* =========================
-   EXTRA SMALL DEVICE
+   EXTRA SMALL
    ========================= */
 
 @media (max-width: 480px) {
-
-  /* 🔥 lebih kecil lagi biar pas */
-  .flex.justify-center > div {
-    transform: scale(0.7);
-  }
 
   h1 {
     font-size: 16px !important;
