@@ -14,46 +14,49 @@ export default function InvoicePreview({ data }: any) {
     0
   );
 
-  const handleDownloadPDF = async () => {
-    const element = printRef.current;
-    if (!element) return;
+const handleDownloadPDF = async () => {
+  const element = printRef.current;
+  if (!element) return;
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-    });
+  // 🔥 CLONE (KUNCI UTAMA)
+  const clone = element.cloneNode(true) as HTMLElement;
 
-    const imgData = canvas.toDataURL("image/png");
+  clone.style.width = "297mm";
+  clone.style.minHeight = "210mm";
+  clone.style.transform = "scale(1)";
+  clone.style.position = "fixed";
+  clone.style.top = "0";
+  clone.style.left = "0";
+  clone.style.zIndex = "-1";
+  clone.style.background = "#fff";
 
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: "a4",
-    });
+  document.body.appendChild(clone);
 
-    const pageWidth = 297;
-    const pageHeight = 210;
+  const canvas = await html2canvas(clone, {
+    scale: 2, // 🔥 konsisten semua device
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    windowWidth: clone.scrollWidth,
+    windowHeight: clone.scrollHeight,
+  });
 
-    const imgRatio = canvas.width / canvas.height;
-    const pageRatio = pageWidth / pageHeight;
+  document.body.removeChild(clone);
 
-    let renderWidth = pageWidth;
-    let renderHeight = pageHeight;
+  const imgData = canvas.toDataURL("image/png");
 
-    if (imgRatio > pageRatio) {
-      renderHeight = pageWidth / imgRatio;
-    } else {
-      renderWidth = pageHeight * imgRatio;
-    }
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4",
+  });
 
-    const x = (pageWidth - renderWidth) / 2;
-    const y = (pageHeight - renderHeight) / 2;
+  const pageWidth = 297;
+  const pageHeight = 210;
 
-    pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
+  pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
 
-    pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
-  };
+  pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
+};
 
   return (
     <div className="w-full">
