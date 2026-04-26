@@ -49,9 +49,9 @@ body {
 
 /* GRID */
 .max-w-350 {
-  max-width: 1200px;
-  width: 100%;
-  margin: auto;
+  max-width: 400px;
+  width: 60%;
+  margin: 5;
 }
 
 .grid {
