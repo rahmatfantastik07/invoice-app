@@ -110,7 +110,7 @@ const handleDownloadPDF = async () => {
                   <p>{data.to?.phone || "-"}</p>
                   <p>{data.to?.email || "-"}</p>
                   <p>
-                    dari {(data.to?.fromCity || "-")} ke {(data.to?.toCity || "-")}
+                    {(data.to?.fromCity || "-")} → {(data.to?.toCity || "-")}
                   </p>
                 </div>
               </div>
