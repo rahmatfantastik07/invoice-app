@@ -73,7 +73,7 @@ export default function InvoiceForm() {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6 max-w-350 mx-auto">
+    <div className="grid md:grid-cols-2 gap-6 max-w-350">
 
       {/* ================= FORM ================= */}
       <div className="bg-white p-4 rounded shadow space-y-3">
@@ -115,7 +115,7 @@ export default function InvoiceForm() {
         {/* 🔥 UPLOAD LOGO */}
         <p className="font-semibold">Upload Logo</p>
         <input
-          type="file" className="btn2" 
+          type="file" 
           onChange={(e) => handleFile(e, "logo")}
         />
 
