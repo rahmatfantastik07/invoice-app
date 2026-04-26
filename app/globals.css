@@ -1,18 +1,17 @@
 @import "tailwindcss";
 
-/* RESET DASAR */
+/* RESET */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* BODY */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
   background: #f3f4f6;
-  color: #111827; /* lebih halus dari #000 */
+  font-family: Arial, sans-serif;
+  color: #111827;
 }
 
 /* INPUT */
@@ -22,54 +21,31 @@ body {
   width: 100%;
   border-radius: 6px;
   font-size: 14px;
-  outline: none;
-  transition: 0.2s;
 }
 
 .input:focus {
+  outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb;
 }
 
-/* BUTTON PRIMARY */
+/* BUTTON */
 .btn {
   background: #2563eb;
-  color: #fff; /* FIX kontras */
-  padding: 10px 12px;
+  color: white;
+  padding: 10px;
   border-radius: 6px;
-  cursor: pointer;
   width: 100%;
-  transition: 0.2s;
 }
 
-.btn:hover {
-  background: #1d4ed8;
-}
-
-/* BUTTON SECONDARY */
 .btn2 {
   background: #10b981;
-  color: #fff;
-  padding: 8px 12px;
+  color: white;
+  padding: 8px;
   border-radius: 6px;
-  cursor: pointer;
   width: 100%;
-  transition: 0.2s;
 }
 
-.btn2:hover {
-  background: #059669;
-}
-
-/* FORM CONTAINER */
-.form-box {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-/* GRID RESPONSIVE */
+/* GRID */
 .invoice-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -85,56 +61,49 @@ body {
   }
 }
 
-/* PREVIEW WRAPPER */
-.preview-wrapper {
-  display: flex;
-  justify-content: center;
+/* =========================
+   🔥 PREVIEW RESPONSIVE FIX
+   ========================= */
+
+/* wrapper default (target div flex kamu) */
+.flex.justify-center {
+  width: 100%;
   overflow-x: auto;
 }
 
-/* SCALE UNTUK MOBILE */
-.preview-scale {
+/* target langsung A4 container */
+.flex.justify-center > div {
   transform-origin: top center;
 }
 
-/* Tablet */
+/* TABLE AMAN */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  word-break: break-word;
+}
+
+/* =========================
+   MOBILE SCALE
+   ========================= */
+
+@media (max-width: 1024px) {
+  .flex.justify-center > div {
+    transform: scale(0.85);
+  }
+}
+
 @media (max-width: 768px) {
-  .preview-scale {
+  .flex.justify-center > div {
     transform: scale(0.65);
   }
 }
 
-/* Android kecil */
 @media (max-width: 480px) {
-  .preview-scale {
+  .flex.justify-center > div {
     transform: scale(0.5);
   }
-}
-
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid #d1d5db;
-  padding: 6px;
-  font-size: 12px;
-}
-
-/* SCROLL TABLE DI MOBILE */
-.table-wrapper {
-  overflow-x: auto;
-}
-
-/* SPACING */
-h2 {
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-p {
-  margin: 2px 0;
 }
