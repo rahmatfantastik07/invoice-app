@@ -19,7 +19,7 @@ export default function InvoicePreview({ data }: any) {
     if (!element) return;
 
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 2, // 🔥 tajam
       backgroundColor: "#ffffff",
       useCORS: true,
     });
@@ -32,19 +32,23 @@ export default function InvoicePreview({ data }: any) {
       format: "a4",
     });
 
-    const pageWidth = 300;
-    const pageHeight = 200;
+    const pageWidth = 297;
+    const pageHeight = 210;
 
-    const imgRatio = canvas.width / canvas.height;
-    const pageRatio = pageWidth / pageHeight;
+    const margin = 15; // 🔥 atur margin di sini
 
-    let renderWidth = pageWidth;
-    let renderHeight = pageHeight;
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
 
-    if (imgRatio > pageRatio) {
-      renderHeight = pageWidth / imgRatio;
-    } else {
-      renderWidth = pageHeight * imgRatio;
+    const maxWidth = pageWidth - margin * 2;
+    const maxHeight = pageHeight - margin * 2;
+
+    let renderWidth = maxWidth;
+    let renderHeight = (imgHeight * maxWidth) / imgWidth;
+
+    if (renderHeight > maxHeight) {
+      renderHeight = maxHeight;
+      renderWidth = (imgWidth * maxHeight) / imgHeight;
     }
 
     const x = (pageWidth - renderWidth) / 2;
@@ -60,20 +64,19 @@ export default function InvoicePreview({ data }: any) {
 
       {/* BUTTON */}
       <div className="mb-2">
-        <button onClick={handleDownloadPDF} className="btn" color="black">
+        <button onClick={handleDownloadPDF} className="btn">
           📄 Download PDF
         </button>
       </div>
 
-      {/* INVOICE AREA */}
+      {/* INVOICE */}
       <div className="flex justify-center">
         <div
           ref={printRef}
           style={{
             width: "297mm",
             minHeight: "210mm",
-            padding: "10mm",
-            paddingBottom: "20mm",
+            padding: "12mm", // 🔥 seimbang
             boxSizing: "border-box",
             background: "#ffffff",
             fontFamily: "Arial, sans-serif",
@@ -91,7 +94,6 @@ export default function InvoicePreview({ data }: any) {
             </div>
 
             <div className="text-right">
-              {/* 🔥 LOGO DITAMBAHKAN DI SINI */}
               {data.logo && (
                 <img
                   src={data.logo}
@@ -169,10 +171,7 @@ export default function InvoicePreview({ data }: any) {
           {/* FOOTER */}
           <div className="flex justify-between mt-10 items-end">
             {data.qris && (
-              <img
-                src={data.qris}
-                className="h-24 object-contain"
-              />
+              <img src={data.qris} className="h-24 object-contain" />
             )}
 
             {data.signature && (
