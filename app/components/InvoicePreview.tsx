@@ -18,25 +18,11 @@ export default function InvoicePreview({ data }: any) {
     const element = printRef.current;
     if (!element) return;
 
-    // 🔥 CLONE supaya tidak kena scale mobile
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    clone.style.transform = "scale(1)";
-    clone.style.width = "297mm";
-    clone.style.minHeight = "210mm";
-    clone.style.position = "absolute";
-    clone.style.top = "-9999px";
-    clone.style.left = "-9999px";
-
-    document.body.appendChild(clone);
-
-    const canvas = await html2canvas(clone, {
+    const canvas = await html2canvas(element, {
       scale: 2,
       backgroundColor: "#ffffff",
       useCORS: true,
     });
-
-    document.body.removeChild(clone);
 
     const imgData = canvas.toDataURL("image/png");
 
@@ -72,16 +58,17 @@ export default function InvoicePreview({ data }: any) {
   return (
     <div className="w-full">
 
+      {/* BUTTON */}
       <div className="mb-2">
         <button onClick={handleDownloadPDF} className="btn">
           📄 Download PDF
         </button>
       </div>
 
-      <div className="preview-wrapper">
+      <div className="preview-wrapper preview-page">
         <div className="preview-scale">
 
-         <div
+          <div
             ref={printRef}
             style={{
               width: "297mm",
@@ -92,19 +79,41 @@ export default function InvoicePreview({ data }: any) {
               background: "#ffffff",
               fontFamily: "Arial, sans-serif",
             }}
-            className="text-sm"
+            className="invoice-print"
           >
 
-            {/* HEADER */}
-            <div className="flex justify-between mb-6">
+            {/* ================= HEADER (FIX PRESISI) ================= */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "60% 40%",
+                gap: "20px",
+                alignItems: "start",
+                marginBottom: "20px",
+              }}
+            >
+
+              {/* KIRI */}
               <div>
                 <h1 className="text-xl font-bold">INVOICE</h1>
                 <p>{data.invoiceNumber || "-"}</p>
                 <p>Tanggal: {formatTanggal(data.date)}</p>
                 <p>Jatuh Tempo: {formatTanggal(data.dueDate)}</p>
+
+                <div style={{ marginTop: "16px" }}>
+                  <p className="font-bold">Kepada:</p>
+                  <p>{data.to?.name || "-"}</p>
+                  <p>{data.to?.address || "-"}</p>
+                  <p>{data.to?.phone || "-"}</p>
+                  <p>{data.to?.email || "-"}</p>
+                  <p>
+                    {(data.to?.fromCity || "-")} → {(data.to?.toCity || "-")}
+                  </p>
+                </div>
               </div>
 
-              <div className="text-right">
+              {/* KANAN */}
+              <div style={{ textAlign: "right" }}>
                 {data.logo && (
                   <img
                     src={data.logo}
@@ -122,20 +131,8 @@ export default function InvoicePreview({ data }: any) {
                 <p>{data.from?.phone || "-"}</p>
                 <p>{data.from?.email || "-"}</p>
               </div>
-            </div>
 
-            {/* CLIENT */}
-            <div className="mb-4">
-              <p className="font-bold">Kepada:</p>
-              <p>{data.to?.name || "-"}</p>
-              <p>{data.to?.address || "-"}</p>
-              <p>{data.to?.phone || "-"}</p>
-              <p>{data.to?.email || "-"}</p>
-              <p>
-                {(data.to?.fromCity || "-")} → {(data.to?.toCity || "-")}
-              </p>
             </div>
-
 
             {/* TABLE */}
             <table className="w-full border table-fixed">
@@ -183,7 +180,10 @@ export default function InvoicePreview({ data }: any) {
             {/* FOOTER */}
             <div className="flex justify-between mt-10 items-end">
               {data.qris && (
-                <img src={data.qris} className="h-24 object-contain" />
+                <img
+                  src={data.qris}
+                  className="h-24 object-contain"
+                />
               )}
 
               {data.signature && (
