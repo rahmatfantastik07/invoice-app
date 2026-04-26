@@ -18,43 +18,51 @@ export default function InvoicePreview({ data }: any) {
     const element = printRef.current;
     if (!element) return;
 
-    const canvas = await html2canvas(element, {
+    // 🔥 CLONE supaya tidak kena scale mobile
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    clone.style.transform = "scale(1)";
+    clone.style.width = "297mm";
+    clone.style.minHeight = "210mm";
+    clone.style.position = "absolute";
+    clone.style.top = "-9999px";
+    clone.style.left = "-9999px";
+
+    document.body.appendChild(clone);
+
+    const canvas = await html2canvas(clone, {
       scale: 2,
       backgroundColor: "#ffffff",
       useCORS: true,
     });
 
+    document.body.removeChild(clone);
+
     const imgData = canvas.toDataURL("image/png");
 
-    // 🔥 GANTI KE PORTRAIT
     const pdf = new jsPDF({
-      orientation: "portrait",
+      orientation: "landscape",
       unit: "mm",
       format: "a4",
     });
 
-    const pageWidth = 210;
-    const pageHeight = 297;
+    const pageWidth = 297;
+    const pageHeight = 210;
 
-    const margin = 15;
+    const imgRatio = canvas.width / canvas.height;
+    const pageRatio = pageWidth / pageHeight;
 
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
+    let renderWidth = pageWidth;
+    let renderHeight = pageHeight;
 
-    const maxWidth = pageWidth - margin * 2;
-    const maxHeight = pageHeight - margin * 2;
-
-    let renderWidth = maxWidth;
-    let renderHeight = (imgHeight * maxWidth) / imgWidth;
-
-    // 🔥 JAGA AGAR TIDAK TERPOTONG
-    if (renderHeight > maxHeight) {
-      renderHeight = maxHeight;
-      renderWidth = (imgWidth * maxHeight) / imgHeight;
+    if (imgRatio > pageRatio) {
+      renderHeight = pageWidth / imgRatio;
+    } else {
+      renderWidth = pageHeight * imgRatio;
     }
 
     const x = (pageWidth - renderWidth) / 2;
-    const y = margin; // 🔥 jangan center vertikal → biar natural seperti dokumen
+    const y = (pageHeight - renderHeight) / 2;
 
     pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
 
@@ -64,20 +72,27 @@ export default function InvoicePreview({ data }: any) {
   return (
     <div className="w-full">
 
-      {/* BUTTON */}
       <div className="mb-2">
         <button onClick={handleDownloadPDF} className="btn">
           📄 Download PDF
         </button>
       </div>
 
-      {/* INVOICE WRAPPER (RESPONSIVE FIX) */}
       <div className="preview-wrapper">
         <div className="preview-scale">
 
           <div
             ref={printRef}
-            className="invoice-paper"
+            style={{
+              width: "297mm",
+              minHeight: "210mm",
+              padding: "10mm",
+              paddingBottom: "20mm",
+              boxSizing: "border-box",
+              background: "#ffffff",
+              fontFamily: "Arial, sans-serif",
+            }}
+            className="text-sm"
           >
 
             {/* HEADER */}
@@ -93,7 +108,12 @@ export default function InvoicePreview({ data }: any) {
                 {data.logo && (
                   <img
                     src={data.logo}
-                    className="logo"
+                    style={{
+                      height: "50px",
+                      marginBottom: "6px",
+                      objectFit: "contain",
+                      marginLeft: "auto",
+                    }}
                   />
                 )}
 
@@ -117,22 +137,28 @@ export default function InvoicePreview({ data }: any) {
             </div>
 
             {/* TABLE */}
-            <table className="preview-table">
+            <table className="w-full border table-fixed">
               <thead>
-                <tr>
-                  <th>Deskripsi</th>
-                  <th>Qty</th>
-                  <th>Harga</th>
-                  <th>Subtotal</th>
+                <tr style={{ background: "#e5e7eb" }}>
+                  <th className="border p-2">Deskripsi</th>
+                  <th className="border p-2 w-16">Qty</th>
+                  <th className="border p-2 w-28">Harga</th>
+                  <th className="border p-2 w-28">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
                 {(data.items || []).map((item: any, i: number) => (
                   <tr key={i}>
-                    <td>{item.desc || "-"}</td>
-                    <td className="text-center">{item.qty || 0}</td>
-                    <td>{formatRupiah(item.price || 0)}</td>
-                    <td>
+                    <td className="border p-2 wrap-break-word">
+                      {item.desc || "-"}
+                    </td>
+                    <td className="border p-2 text-center">
+                      {item.qty || 0}
+                    </td>
+                    <td className="border p-2">
+                      {formatRupiah(item.price || 0)}
+                    </td>
+                    <td className="border p-2">
                       {formatRupiah(
                         (item.qty || 0) * (item.price || 0)
                       )}
@@ -156,7 +182,7 @@ export default function InvoicePreview({ data }: any) {
             {/* FOOTER */}
             <div className="flex justify-between mt-10 items-end">
               {data.qris && (
-                <img src={data.qris} className="qris" />
+                <img src={data.qris} className="h-24 object-contain" />
               )}
 
               {data.signature && (
@@ -164,7 +190,7 @@ export default function InvoicePreview({ data }: any) {
                   <p>Hormat Kami,</p>
                   <img
                     src={data.signature}
-                    className="signature"
+                    className="h-20 mx-auto object-contain"
                   />
                   <p>{data.from?.name || "-"}</p>
                 </div>
@@ -172,7 +198,13 @@ export default function InvoicePreview({ data }: any) {
             </div>
 
             {/* FOOTNOTE */}
-            <div className="footnote">
+            <div
+              style={{
+                marginTop: "15px",
+                fontSize: "8px",
+                textAlign: "center",
+              }}
+            >
               <p>Terima kasih atas kepercayaan Anda 🙏</p>
               <p>Dibuat oleh: {data.from?.name || "-"}</p>
             </div>
