@@ -1,209 +1,235 @@
-"use client";
+@import "tailwindcss";
 
-import { formatRupiah, formatTanggal } from "./utils";
-import { useRef } from "react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+/* =========================
+   RESET
+   ========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-export default function InvoicePreview({ data }: any) {
-  const printRef = useRef<HTMLDivElement>(null);
+body {
+  margin: 0;
+  background: #f3f4f6;
+  font-family: Arial, sans-serif;
+  color: #111827;
+}
 
-  const total = (data.items || []).reduce(
-    (sum: number, item: any) =>
-      sum + (item.qty || 0) * (item.price || 0),
-    0
-  );
+/* =========================
+   LAYOUT
+   ========================= */
 
-  const handleDownloadPDF = async () => {
-    const element = printRef.current;
-    if (!element) return;
+.max-w-350 {
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+}
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-    });
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 12px;
+}
 
-    const imgData = canvas.toDataURL("image/png");
+@media (min-width: 768px) {
+  .grid.md\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
 
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: "a4",
-    });
+/* =========================
+   FORM
+   ========================= */
 
-    const pageWidth = 297;
-    const pageHeight = 210;
+.bg-white {
+  background: #fff;
+}
 
-    const imgRatio = canvas.width / canvas.height;
-    const pageRatio = pageWidth / pageHeight;
+.shadow {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
 
-    let renderWidth = pageWidth;
-    let renderHeight = pageHeight;
+.rounded {
+  border-radius: 10px;
+}
 
-    if (imgRatio > pageRatio) {
-      renderHeight = pageWidth / imgRatio;
-    } else {
-      renderWidth = pageHeight * imgRatio;
-    }
+.space-y-3 > * + * {
+  margin-top: 12px;
+}
 
-    const x = (pageWidth - renderWidth) / 2;
-    const y = (pageHeight - renderHeight) / 2;
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
 
-    pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
+.input {
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  width: 100%;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+}
 
-    pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
-  };
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
 
-  return (
-    <div className="w-full">
+input[type="file"] {
+  width: 100%;
+  font-size: 14px;
+}
 
-      {/* BUTTON */}
-      <div className="mb-2">
-        <button onClick={handleDownloadPDF} className="btn">
-          📄 Download PDF
-        </button>
-      </div>
+.btn {
+  background: #2563eb;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  width: 100%;
+}
 
-      {/* 🔥 WRAPPER RESPONSIVE */}
-      <div className="preview-wrapper">
-        <div className="preview-scale">
+.btn2 {
+  background: #10b981;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  width: 100%;
+}
 
-          {/* 🔥 AREA ASLI (JANGAN DIUBAH) */}
-          <div
-            ref={printRef}
-            style={{
-              width: "297mm",
-              minHeight: "210mm",
-              padding: "10mm",
-              paddingBottom: "20mm",
-              boxSizing: "border-box",
-              background: "#ffffff",
-              fontFamily: "Arial, sans-serif",
-            }}
-            className="text-sm"
-          >
+/* =========================
+   PREVIEW WRAPPER
+   ========================= */
 
-            {/* HEADER */}
-            <div className="flex justify-between mb-6">
-              <div>
-                <h1 className="text-xl font-bold">INVOICE</h1>
-                <p>{data.invoiceNumber || "-"}</p>
-                <p>Tanggal: {formatTanggal(data.date)}</p>
-                <p>Jatuh Tempo: {formatTanggal(data.dueDate)}</p>
-              </div>
+.preview-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
 
-              <div className="text-right">
-                {data.logo && (
-                  <img
-                    src={data.logo}
-                    style={{
-                      height: "50px",
-                      marginBottom: "6px",
-                      objectFit: "contain",
-                      marginLeft: "auto",
-                    }}
-                  />
-                )}
+/* area scaling */
+.preview-scale {
+  transform-origin: top center;
+}
 
-                <p className="font-bold">{data.from?.name || "-"}</p>
-                <p>{data.from?.address || "-"}</p>
-                <p>{data.from?.phone || "-"}</p>
-                <p>{data.from?.email || "-"}</p>
-              </div>
-            </div>
+/* =========================
+   A4 DESKTOP (FIXED - JANGAN DIUBAH)
+   ========================= */
 
-            {/* CLIENT */}
-            <div className="mb-4">
-              <p className="font-bold">Kepada:</p>
-              <p>{data.to?.name || "-"}</p>
-              <p>{data.to?.address || "-"}</p>
-              <p>{data.to?.phone || "-"}</p>
-              <p>{data.to?.email || "-"}</p>
-              <p>
-                {(data.to?.fromCity || "-")} → {(data.to?.toCity || "-")}
-              </p>
-            </div>
+.preview-scale > div {
+  width: 297mm;
+  min-height: 210mm;
+  background: white;
+}
 
-            {/* TABLE */}
-            <table className="w-full border table-fixed">
-              <thead>
-                <tr style={{ background: "#e5e7eb" }}>
-                  <th className="border p-2">Deskripsi</th>
-                  <th className="border p-2 w-16">Qty</th>
-                  <th className="border p-2 w-28">Harga</th>
-                  <th className="border p-2 w-28">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(data.items || []).map((item: any, i: number) => (
-                  <tr key={i}>
-                    <td className="border p-2 wrap-break-word">
-                      {item.desc || "-"}
-                    </td>
-                    <td className="border p-2 text-center">
-                      {item.qty || 0}
-                    </td>
-                    <td className="border p-2">
-                      {formatRupiah(item.price || 0)}
-                    </td>
-                    <td className="border p-2">
-                      {formatRupiah(
-                        (item.qty || 0) * (item.price || 0)
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+/* =========================
+   TABLE
+   ========================= */
 
-            {/* TOTAL */}
-            <h3 className="text-right mt-4 font-bold">
-              TOTAL: {formatRupiah(total)}
-            </h3>
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
 
-            {/* NOTES */}
-            <div className="mt-6">
-              <p className="font-bold">Catatan:</p>
-              <p>{data.notes || "-"}</p>
-            </div>
+td, th {
+  border: 1px solid #d1d5db;
+  padding: 6px;
+  word-break: break-word;
+  font-size: 12px;
+}
 
-            {/* FOOTER */}
-            <div className="flex justify-between mt-10 items-end">
-              {data.qris && (
-                <img
-                  src={data.qris}
-                  className="h-24 object-contain"
-                />
-              )}
+th {
+  background: #e5e7eb;
+}
 
-              {data.signature && (
-                <div className="text-center">
-                  <p>Hormat Kami,</p>
-                  <img
-                    src={data.signature}
-                    className="h-20 mx-auto object-contain"
-                  />
-                  <p>{data.from?.name || "-"}</p>
-                </div>
-              )}
-            </div>
+/* =========================
+   🔥 RESPONSIVE (AMAN UNTUK PDF)
+   ========================= */
 
-            {/* FOOTNOTE */}
-            <div
-              style={{
-                marginTop: "15px",
-                fontSize: "8px",
-                textAlign: "center",
-              }}
-            >
-              <p>Terima kasih atas kepercayaan Anda 🙏</p>
-              <p>Dibuat oleh: {data.from?.name || "-"}</p>
-            </div>
+/* tablet */
+@media (max-width: 1024px) {
+  .preview-scale {
+    transform: scale(0.85);
+  }
+}
 
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+/* hp */
+@media (max-width: 768px) {
+
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .preview-scale {
+    transform: scale(0.65);
+  }
+
+  /* header stack */
+  .flex.justify-between {
+    flex-direction: column !important;
+    gap: 10px;
+    align-items: flex-start !important;
+  }
+
+  .text-right {
+    text-align: left !important;
+  }
+
+  img {
+    max-width: 120px;
+    height: auto !important;
+  }
+
+  /* table tetap rapi */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .flex.items-end {
+    flex-direction: column !important;
+    gap: 16px;
+    align-items: flex-start !important;
+  }
+
+  .text-sm {
+    font-size: 14px !important;
+  }
+
+  h1 {
+    font-size: 18px !important;
+  }
+}
+
+/* hp kecil */
+@media (max-width: 480px) {
+
+  .preview-scale {
+    transform: scale(0.5);
+  }
+
+  h1 {
+    font-size: 16px !important;
+  }
+
+  .text-sm {
+    font-size: 13px !important;
+  }
+
+  .input {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .btn,
+  .btn2 {
+    font-size: 13px;
+    padding: 8px;
+  }
 }
