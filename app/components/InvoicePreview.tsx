@@ -34,9 +34,9 @@ export default function InvoicePreview({ data }: any) {
     });
 
     const pageWidth = 210;
-    const pageHeight = 297;
+    const pageHeight = 300;
 
-    const margin = 15;
+    const margin = 10;
 
     const imgWidth = canvas.width;
     const imgHeight = canvas.height;
