@@ -14,49 +14,54 @@ export default function InvoicePreview({ data }: any) {
     0
   );
 
-const handleDownloadPDF = async () => {
-  const element = printRef.current;
-  if (!element) return;
+  const handleDownloadPDF = async () => {
+    try {
+      const element = printRef.current;
+      if (!element) return;
 
-  // 🔥 CLONE (KUNCI UTAMA)
-  const clone = element.cloneNode(true) as HTMLElement;
+      // 🔥 CLONE BIAR AMAN DI MOBILE
+      const clone = element.cloneNode(true) as HTMLElement;
 
-  clone.style.width = "297mm";
-  clone.style.minHeight = "210mm";
-  clone.style.transform = "scale(1)";
-  clone.style.position = "fixed";
-  clone.style.top = "0";
-  clone.style.left = "0";
-  clone.style.zIndex = "-1";
-  clone.style.background = "#fff";
+      clone.style.width = "297mm";
+      clone.style.minHeight = "210mm";
+      clone.style.transform = "scale(1)";
+      clone.style.position = "fixed";
+      clone.style.top = "0";
+      clone.style.left = "0";
+      clone.style.zIndex = "-1";
+      clone.style.background = "#fff";
 
-  document.body.appendChild(clone);
+      document.body.appendChild(clone);
 
-  const canvas = await html2canvas(clone, {
-    scale: 2, // 🔥 konsisten semua device
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    windowWidth: clone.scrollWidth,
-    windowHeight: clone.scrollHeight,
-  });
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        windowWidth: clone.scrollWidth,
+        windowHeight: clone.scrollHeight,
+      });
 
-  document.body.removeChild(clone);
+      document.body.removeChild(clone);
 
-  const imgData = canvas.toDataURL("image/png");
+      const imgData = canvas.toDataURL("image/png");
 
-  const pdf = new jsPDF({
-    orientation: "landscape",
-    unit: "mm",
-    format: "a4",
-  });
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
 
-  const pageWidth = 297;
-  const pageHeight = 210;
+      const pageWidth = 297;
+      const pageHeight = 210;
 
-  pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
 
-  pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
-};
+      pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
+    } catch (err) {
+      console.error("PDF ERROR:", err);
+      alert("Gagal download PDF");
+    }
+  };
 
   return (
     <div className="w-full">
@@ -85,7 +90,7 @@ const handleDownloadPDF = async () => {
             className="invoice-print"
           >
 
-            {/* ================= HEADER (FIX PRESISI) ================= */}
+            {/* ================= HEADER ================= */}
             <div
               style={{
                 display: "grid",
@@ -105,12 +110,23 @@ const handleDownloadPDF = async () => {
 
                 <div style={{ marginTop: "16px" }}>
                   <p className="font-bold">Kepada:</p>
-                  <strong><p className="text-blue-950">{data.to?.name || "-"}</p></strong>
+                  <strong>
+                    <p className="text-blue-950">
+                      {data.to?.name || "-"}
+                    </p>
+                  </strong>
                   <p>{data.to?.address || "-"}</p>
                   <p>{data.to?.phone || "-"}</p>
                   <p>{data.to?.email || "-"}</p>
                   <p>
-                    dari <strong className="text-blue-950">{(data.to?.fromCity || "-")}</strong> ke <strong className="text-blue-950">{(data.to?.toCity || "-")}</strong>
+                    dari{" "}
+                    <strong className="text-blue-950">
+                      {data.to?.fromCity || "-"}
+                    </strong>{" "}
+                    ke{" "}
+                    <strong className="text-blue-950">
+                      {data.to?.toCity || "-"}
+                    </strong>
                   </p>
                 </div>
               </div>
@@ -134,7 +150,6 @@ const handleDownloadPDF = async () => {
                 <p>{data.from?.phone || "-"}</p>
                 <p>{data.from?.email || "-"}</p>
               </div>
-
             </div>
 
             {/* TABLE */}
