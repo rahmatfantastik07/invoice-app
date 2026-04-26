@@ -72,20 +72,7 @@ export default function InvoiceForm() {
     reader.readAsDataURL(file);
   };
 
-  const validatePhone = (value: string) => {
-  // hanya angka
-  const clean = value.replace(/\D/g, "");
-
-  // harus diawali 62
-  if (!clean.startsWith("62")) return false;
-
-  // maksimal 13 digit
-  if (clean.length > 12) return false;
-
-  return true;
-};
-
-const [errors, setErrors] = useState<any>({});
+  
 
   return (
     <div className="grid md:grid-cols-2 gap-6 max-w-350">
@@ -155,29 +142,16 @@ const [errors, setErrors] = useState<any>({});
             })
           }
         />
-       <input
-  className="input"
-  placeholder="HP (08xxxxxxxxxxx)"
-  value={data.from.phone}
-  onChange={(e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setData({
-      ...data,
-      from: { ...data.from, phone: value },
-    });
-
-    setErrors({
-      ...errors,
-      fromPhone: validatePhone(value) ? "" : "Format harus 08 dan max 12 digit",
-    });
-  }}
-/>
-
-{errors.fromPhone && (
-  <p style={{ color: "red", fontSize: "12px" }}>
-    {errors.fromPhone}
-  </p>
-)}
+        <input
+          className="input"
+          placeholder="HP"
+          onChange={(e) =>
+            setData({
+              ...data,
+              from: { ...data.from, phone: e.target.value },
+            })
+          }
+        />
         <input
           className="input"
           placeholder="Email"
@@ -211,29 +185,16 @@ const [errors, setErrors] = useState<any>({});
             })
           }
         />
- <input
-  className="input"
-  placeholder="HP (08xxxxxxxxxxx)"
-  value={data.from.phone}
-  onChange={(e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setData({
-      ...data,
-      from: { ...data.from, phone: value },
-    });
-
-    setErrors({
-      ...errors,
-      fromPhone: validatePhone(value) ? "" : "Format harus 08 dan max 12 digit",
-    });
-  }}
-/>
-
-{errors.fromPhone && (
-  <p style={{ color: "red", fontSize: "12px" }}>
-    {errors.fromPhone}
-  </p>
-)}
+        <input
+          className="input"
+          placeholder="HP"
+          onChange={(e) =>
+            setData({
+              ...data,
+              to: { ...data.to, phone: e.target.value },
+            })
+          }
+        />
         <input
           className="input"
           placeholder="Email"
