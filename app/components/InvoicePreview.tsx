@@ -18,25 +18,11 @@ export default function InvoicePreview({ data }: any) {
     const element = printRef.current;
     if (!element) return;
 
-    // 🔥 CLONE supaya tidak kena scale mobile
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    clone.style.transform = "scale(1)";
-    clone.style.width = "297mm";
-    clone.style.minHeight = "210mm";
-    clone.style.position = "absolute";
-    clone.style.top = "-9999px";
-    clone.style.left = "-9999px";
-
-    document.body.appendChild(clone);
-
-    const canvas = await html2canvas(clone, {
+    const canvas = await html2canvas(element, {
       scale: 2,
       backgroundColor: "#ffffff",
       useCORS: true,
     });
-
-    document.body.removeChild(clone);
 
     const imgData = canvas.toDataURL("image/png");
 
@@ -72,15 +58,18 @@ export default function InvoicePreview({ data }: any) {
   return (
     <div className="w-full">
 
+      {/* BUTTON */}
       <div className="mb-2">
         <button onClick={handleDownloadPDF} className="btn">
           📄 Download PDF
         </button>
       </div>
 
+      {/* 🔥 WRAPPER RESPONSIVE */}
       <div className="preview-wrapper">
         <div className="preview-scale">
 
+          {/* 🔥 AREA ASLI (JANGAN DIUBAH) */}
           <div
             ref={printRef}
             style={{
@@ -182,7 +171,10 @@ export default function InvoicePreview({ data }: any) {
             {/* FOOTER */}
             <div className="flex justify-between mt-10 items-end">
               {data.qris && (
-                <img src={data.qris} className="h-24 object-contain" />
+                <img
+                  src={data.qris}
+                  className="h-24 object-contain"
+                />
               )}
 
               {data.signature && (
