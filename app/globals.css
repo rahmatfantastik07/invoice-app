@@ -33,6 +33,7 @@ body {
   padding: 12px;
 }
 
+/* desktop */
 @media (min-width: 768px) {
   .grid.md\:grid-cols-2 {
     grid-template-columns: 1fr 1fr;
@@ -46,6 +47,7 @@ body {
 
 .bg-white {
   background: #fff;
+  width: 100%;
 }
 
 .shadow {
@@ -65,6 +67,7 @@ h2 {
   font-weight: 600;
 }
 
+/* INPUT */
 .input {
   border: 1px solid #d1d5db;
   padding: 10px;
@@ -79,11 +82,17 @@ h2 {
   border-color: #2563eb;
 }
 
+textarea.input {
+  min-height: 80px;
+}
+
+/* FILE */
 input[type="file"] {
   width: 100%;
   font-size: 14px;
 }
 
+/* BUTTON */
 .btn {
   background: #2563eb;
   color: #fff;
@@ -104,23 +113,23 @@ input[type="file"] {
    PREVIEW WRAPPER
    ========================= */
 
-.flex.justify-center {
+.preview-wrapper {
   width: 100%;
   overflow-x: auto;
-  padding: 10px;
   display: flex;
   justify-content: center;
+  padding: 10px;
 }
 
-/* =========================
-   A4 DESKTOP (JANGAN DIUBAH)
-   ========================= */
+.preview-scale {
+  transform-origin: top center;
+}
 
-.flex.justify-center > div {
+/* A4 FIX */
+.preview-scale > div {
   width: 297mm;
   min-height: 210mm;
   background: white;
-  transform-origin: top center;
 }
 
 /* =========================
@@ -144,29 +153,37 @@ th {
 }
 
 /* =========================
-   🔥 MOBILE FIX UTAMA
+   🔥 MOBILE FIX (FORM + PREVIEW)
    ========================= */
 
 @media (max-width: 768px) {
 
-  /* grid tetap 1 kolom */
+  /* GRID tetap 1 kolom */
   .grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* wrapper JANGAN hidden */
-  .flex.justify-center {
-    overflow-x: auto;
+  /* 🔥 FORM FIX UTAMA */
+  .flex {
+    flex-direction: column;
   }
 
-  /* 🔥 SOLUSI: FIT WIDTH TANPA SCALE BERLEBIH */
-  .flex.justify-center > div {
-    width: 100% !important;
-    min-height: auto !important;
-    padding: 16px !important;
+  /* khusus input berpasangan */
+  .flex.gap-2 {
+    flex-direction: column !important;
   }
 
-  /* header jadi stack */
+  /* kasih jarak biar gak nempel */
+  .flex.gap-2 > * {
+    width: 100%;
+  }
+
+  /* PREVIEW tetap scaled */
+  .preview-scale {
+    transform: scale(0.65);
+  }
+
+  /* header preview */
   .flex.justify-between {
     flex-direction: column !important;
     gap: 10px;
@@ -177,27 +194,25 @@ th {
     text-align: left !important;
   }
 
-  /* gambar */
   img {
     max-width: 120px;
     height: auto !important;
   }
 
-  /* table scroll */
+  /* table tetap bisa scroll */
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  /* footer */
+  /* footer preview */
   .flex.items-end {
     flex-direction: column !important;
     gap: 16px;
     align-items: flex-start !important;
   }
 
-  /* font lebih readable */
   .text-sm {
     font-size: 14px !important;
   }
@@ -212,6 +227,10 @@ th {
    ========================= */
 
 @media (max-width: 480px) {
+
+  .preview-scale {
+    transform: scale(0.5);
+  }
 
   h1 {
     font-size: 16px !important;
