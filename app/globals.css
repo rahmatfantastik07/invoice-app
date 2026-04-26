@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-/* RESET */
+/* =========================
+   RESET
+   ========================= */
 *,
 *::before,
 *::after {
@@ -14,7 +16,9 @@ body {
   color: #111827;
 }
 
-/* INPUT */
+/* =========================
+   INPUT
+   ========================= */
 .input {
   border: 1px solid #d1d5db;
   padding: 10px;
@@ -28,7 +32,9 @@ body {
   border-color: #2563eb;
 }
 
-/* BUTTON */
+/* =========================
+   BUTTON
+   ========================= */
 .btn {
   background: #2563eb;
   color: white;
@@ -45,7 +51,9 @@ body {
   width: 100%;
 }
 
-/* GRID */
+/* =========================
+   GRID FORM
+   ========================= */
 .invoice-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -62,48 +70,116 @@ body {
 }
 
 /* =========================
-   🔥 PREVIEW RESPONSIVE FIX
+   PREVIEW DESKTOP (A4)
    ========================= */
-
-/* wrapper default (target div flex kamu) */
 .flex.justify-center {
   width: 100%;
   overflow-x: auto;
+  padding: 10px;
 }
 
-/* target langsung A4 container */
 .flex.justify-center > div {
   transform-origin: top center;
 }
 
-/* TABLE AMAN */
+/* TABLE */
 table {
   border-collapse: collapse;
   width: 100%;
 }
 
 td, th {
+  border: 1px solid #d1d5db;
+  padding: 6px;
   word-break: break-word;
 }
 
 /* =========================
-   MOBILE SCALE
+   🔥 MOBILE MODE (REAL RESPONSIVE)
    ========================= */
-
-@media (max-width: 1024px) {
-  .flex.justify-center > div {
-    transform: scale(0.85);
-  }
-}
-
 @media (max-width: 768px) {
+
+  /* container */
+  .flex.justify-center {
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 10px;
+  }
+
+  /* override A4 jadi fleksibel */
   .flex.justify-center > div {
-    transform: scale(0.65);
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 16px !important;
+  }
+
+  /* HEADER jadi vertikal */
+  .flex.justify-center > div > div:first-child {
+    flex-direction: column !important;
+    gap: 10px;
+  }
+
+  /* logo */
+  img {
+    max-width: 120px;
+    height: auto !important;
+  }
+
+  /* text kanan jadi kiri */
+  .text-right {
+    text-align: left !important;
+  }
+
+  /* TABLE scroll horizontal */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* font */
+  .text-sm {
+    font-size: 14px !important;
+  }
+
+  h1 {
+    font-size: 18px !important;
+  }
+
+  /* footer jadi stack */
+  .flex.justify-between {
+    flex-direction: column !important;
+    gap: 16px;
+    align-items: flex-start !important;
+  }
+
+  /* QR & signature */
+  .flex.justify-between img {
+    max-width: 150px;
   }
 }
 
+/* =========================
+   EXTRA SMALL DEVICE
+   ========================= */
 @media (max-width: 480px) {
-  .flex.justify-center > div {
-    transform: scale(0.5);
+
+  .text-sm {
+    font-size: 13px !important;
   }
+
+  h1 {
+    font-size: 16px !important;
+  }
+
+  .input {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .btn, .btn2 {
+    font-size: 13px;
+    padding: 8px;
+  }
+
 }
