@@ -80,7 +80,7 @@ export default function InvoiceForm() {
   if (!clean.startsWith("62")) return false;
 
   // maksimal 13 digit
-  if (clean.length > 13) return false;
+  if (clean.length > 12) return false;
 
   return true;
 };
