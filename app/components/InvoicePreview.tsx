@@ -1,334 +1,221 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import InvoicePreview from "./InvoicePreview";
-import { generateInvoiceNumber } from "./utils";
+import { formatRupiah, formatTanggal } from "./utils";
+import { useRef } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
-export default function InvoiceForm() {
-  const [data, setData] = useState<any>({
-    invoiceNumber: "",
-    date: "",
-    dueDate: "",
-    from: {
-      name: "CV. Family Target",
-      address: "",
-      phone: "",
-      email: "",
-    },
-    to: {
-      name: "",
-      address: "",
-      phone: "",
-      email: "",
-      fromCity: "",
-      toCity: "",
-    },
-    items: [{ desc: "", qty: 1, price: 0 }],
-    notes: "",
-    signature: "",
-    qris: "",
-    logo: "", // ✅ TAMBAHAN
+export default function InvoicePreview({ data }: any) {
+  const printRef = useRef<HTMLDivElement>(null);
+
+  const total = (data.items || []).reduce(
+    (sum: number, item: any) =>
+      sum + (item.qty || 0) * (item.price || 0),
+    0
+  );
+
+const handleDownloadPDF = async () => {
+  const element = printRef.current;
+  if (!element) return;
+
+  // 🔥 CLONE (KUNCI UTAMA)
+  const clone = element.cloneNode(true) as HTMLElement;
+
+  clone.style.width = "297mm";
+  clone.style.minHeight = "210mm";
+  clone.style.transform = "scale(1)";
+  clone.style.position = "fixed";
+  clone.style.top = "0";
+  clone.style.left = "0";
+  clone.style.zIndex = "-1";
+  clone.style.background = "#fff";
+
+  document.body.appendChild(clone);
+
+  const canvas = await html2canvas(clone, {
+    scale: 2, // 🔥 konsisten semua device
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    windowWidth: clone.scrollWidth,
+    windowHeight: clone.scrollHeight,
   });
 
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
+  document.body.removeChild(clone);
 
-    setData((prev: any) => ({
-      ...prev,
-      invoiceNumber: prev.invoiceNumber || generateInvoiceNumber(),
-      date: prev.date || today,
-      dueDate: prev.dueDate || today,
-    }));
-  }, []);
+  const imgData = canvas.toDataURL("image/png");
 
-  const updateItem = (i: number, field: string, value: any) => {
-    const items = [...data.items];
-    items[i][field] = value;
-    setData({ ...data, items });
-  };
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4",
+  });
 
-  const addItem = () => {
-    setData({
-      ...data,
-      items: [...data.items, { desc: "", qty: 1, price: 0 }],
-    });
-  };
+  const pageWidth = 297;
+  const pageHeight = 210;
 
-  // 🔥 SUPPORT LOGO JUGA
-  const handleFile = (
-    e: any,
-    type: "signature" | "qris" | "logo"
-  ) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setData((prev: any) => ({
-        ...prev,
-        [type]: reader.result,
-      }));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const validatePhone = (value: string) => {
-  // hanya angka
-  const clean = value.replace(/\D/g, "");
-
-  // harus diawali 62
-  if (!clean.startsWith("62")) return false;
-
-  // maksimal 13 digit
-  if (clean.length > 13) return false;
-
-  return true;
+  pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
 };
 
-const [errors, setErrors] = useState<any>({});
-
   return (
-    <div className="grid md:grid-cols-2 gap-6 max-w-350">
+    <div className="w-full">
 
-      {/* ================= FORM ================= */}
-      <div className="bg-white p-4 rounded shadow space-y-3">
-
-        {/* NOMOR */}
-        <h2 className="font-bold">Nomor Invoice</h2>
-        <input
-          className="input"
-          value={data.invoiceNumber}
-          onChange={(e) =>
-            setData({ ...data, invoiceNumber: e.target.value })
-          }
-        />
-
-        {/* TANGGAL */}
-        <h2 className="font-bold">Tanggal</h2>
-        <div className="flex gap-2">
-          <input
-            type="date"
-            className="input"
-            value={data.date}
-            onChange={(e) =>
-              setData({ ...data, date: e.target.value })
-            }
-          />
-          <input
-            type="date"
-            className="input"
-            value={data.dueDate}
-            onChange={(e) =>
-              setData({ ...data, dueDate: e.target.value })
-            }
-          />
-        </div>
-
-        {/* PENGIRIM */}
-        <h2 className="font-bold">Pengirim</h2>
-
-        {/* 🔥 UPLOAD LOGO */}
-        <p className="font-semibold">Upload Logo</p>
-        <input
-          type="file" className="btn2"
-          onChange={(e) => handleFile(e, "logo")}
-        />
-
-        <input
-          className="input"
-          placeholder="Nama"
-          value={data.from.name}
-          onChange={(e) =>
-            setData({
-              ...data,
-              from: { ...data.from, name: e.target.value },
-            })
-          }
-        />
-        <input
-          className="input"
-          placeholder="Alamat"
-          onChange={(e) =>
-            setData({
-              ...data,
-              from: { ...data.from, address: e.target.value },
-            })
-          }
-        />
-       <input
-  className="input"
-  placeholder="HP (08xxxxxxxxxxx)"
-  value={data.from.phone}
-  onChange={(e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setData({
-      ...data,
-      from: { ...data.from, phone: value },
-    });
-
-    setErrors({
-      ...errors,
-      fromPhone: validatePhone(value) ? "" : "Format harus 08 dan max 12 digit",
-    });
-  }}
-/>
-
-{errors.fromPhone && (
-  <p style={{ color: "red", fontSize: "12px" }}>
-    {errors.fromPhone}
-  </p>
-)}
-        <input
-          className="input"
-          placeholder="Email"
-          onChange={(e) =>
-            setData({
-              ...data,
-              from: { ...data.from, email: e.target.value },
-            })
-          }
-        />
-
-        {/* PENERIMA */}
-        <h2 className="font-bold">Penerima</h2>
-        <input
-          className="input"
-          placeholder="Nama"
-          onChange={(e) =>
-            setData({
-              ...data,
-              to: { ...data.to, name: e.target.value },
-            })
-          }
-        />
-        <input
-          className="input"
-          placeholder="Alamat"
-          onChange={(e) =>
-            setData({
-              ...data,
-              to: { ...data.to, address: e.target.value },
-            })
-          }
-        />
- <input
-  className="input"
-  placeholder="HP (08xxxxxxxxxxx)"
-  value={data.from.phone}
-  onChange={(e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setData({
-      ...data,
-      from: { ...data.from, phone: value },
-    });
-
-    setErrors({
-      ...errors,
-      fromPhone: validatePhone(value) ? "" : "Format harus 08 dan max 12 digit",
-    });
-  }}
-/>
-
-{errors.fromPhone && (
-  <p style={{ color: "red", fontSize: "12px" }}>
-    {errors.fromPhone}
-  </p>
-)}
-        <input
-          className="input"
-          placeholder="Email"
-          onChange={(e) =>
-            setData({
-              ...data,
-              to: { ...data.to, email: e.target.value },
-            })
-          }
-        />
-
-        <div className="flex gap-2">
-          <input
-            className="input"
-            placeholder="Dari Kota"
-            onChange={(e) =>
-              setData({
-                ...data,
-                to: { ...data.to, fromCity: e.target.value },
-              })
-            }
-          />
-          <input
-            className="input"
-            placeholder="Ke Kota"
-            onChange={(e) =>
-              setData({
-                ...data,
-                to: { ...data.to, toCity: e.target.value },
-              })
-            }
-          />
-        </div>
-
-        {/* ITEM */}
-        <h2 className="font-bold">Tambah Item</h2>
-        {data.items.map((item: any, i: number) => (
-          <div key={i}>
-            <input
-              className="input"
-              placeholder="Deskripsi"
-              onChange={(e) =>
-                updateItem(i, "desc", e.target.value)
-              }
-            />
-            <div className="flex gap-2">
-              <input
-                type="number"
-                className="input"
-                placeholder="Qty"
-                onChange={(e) =>
-                  updateItem(i, "qty", +e.target.value)
-                }
-              />
-              <input
-                type="number"
-                className="input"
-                placeholder="Harga"
-                onChange={(e) =>
-                  updateItem(i, "price", +e.target.value)
-                }
-              />
-            </div>
-          </div>
-        ))}
-
-        <button onClick={addItem} className="btn">
-          + Item
+      {/* BUTTON */}
+      <div className="mb-2">
+        <button onClick={handleDownloadPDF} className="btn">
+          📄 Download PDF
         </button>
-
-        {/* NOTES */}
-        <textarea
-          className="input"
-          placeholder="Catatan"
-          onChange={(e) =>
-            setData({ ...data, notes: e.target.value })
-          }
-        />
-
-        {/* FILE */}
-        <p className="font-semibold">Upload Tanda Tangan</p>
-        <input
-          type="file" className="btn2"
-          onChange={(e) => handleFile(e, "signature")}
-        />
-
-        <p className="font-semibold">Upload QRIS</p>
-        <input
-          type="file" className="btn2"
-          onChange={(e) => handleFile(e, "qris")}
-        />
       </div>
 
-      {/* ================= PREVIEW ================= */}
-      <InvoicePreview data={data} />
+      <div className="preview-wrapper preview-page">
+        <div className="preview-scale">
+
+          <div
+            ref={printRef}
+            style={{
+              width: "297mm",
+              minHeight: "210mm",
+              padding: "10mm",
+              paddingBottom: "20mm",
+              boxSizing: "border-box",
+              background: "#ffffff",
+              fontFamily: "Arial, sans-serif",
+            }}
+            className="invoice-print"
+          >
+
+            {/* ================= HEADER (FIX PRESISI) ================= */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "40% 40%",
+                gap: "20px",
+                alignItems: "start",
+                marginBottom: "20px",
+              }}
+            >
+
+              {/* KIRI */}
+              <div>
+                <h1 className="text-xl font-bold">INVOICE</h1>
+                <p>{data.invoiceNumber || "-"}</p>
+                <p>Tanggal: {formatTanggal(data.date)}</p>
+                <p>Jatuh Tempo: {formatTanggal(data.dueDate)}</p>
+
+                <div style={{ marginTop: "16px" }}>
+                  <p className="font-bold">Kepada:</p>
+                  <strong><p className="text-blue-950">{data.to?.name || "-"}</p></strong>
+                  <p>{data.to?.address || "-"}</p>
+                  <p>{data.to?.phone || "-"}</p>
+                  <p>{data.to?.email || "-"}</p>
+                  <p>
+                    dari <strong className="text-blue-950">{(data.to?.fromCity || "-")}</strong> ke <strong className="text-blue-950">{(data.to?.toCity || "-")}</strong>
+                  </p>
+                </div>
+              </div>
+
+              {/* KANAN */}
+              <div style={{ textAlign: "right" }}>
+                {data.logo && (
+                  <img
+                    src={data.logo}
+                    style={{
+                      height: "50px",
+                      marginBottom: "6px",
+                      objectFit: "contain",
+                      marginLeft: "auto",
+                    }}
+                  />
+                )}
+
+                <p className="font-bold">{data.from?.name || "-"}</p>
+                <p>{data.from?.address || "-"}</p>
+                <p>{data.from?.phone || "-"}</p>
+                <p>{data.from?.email || "-"}</p>
+              </div>
+
+            </div>
+
+            {/* TABLE */}
+            <table className="w-full border table-fixed">
+              <thead>
+                <tr style={{ background: "#e5e7eb" }}>
+                  <th className="border p-2">Deskripsi</th>
+                  <th className="border p-2 w-16">Qty</th>
+                  <th className="border p-2 w-28">Harga</th>
+                  <th className="border p-2 w-28">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data.items || []).map((item: any, i: number) => (
+                  <tr key={i}>
+                    <td className="border p-2 wrap-break-word">
+                      {item.desc || "-"}
+                    </td>
+                    <td className="border p-2 text-center">
+                      {item.qty || 0}
+                    </td>
+                    <td className="border p-2">
+                      {formatRupiah(item.price || 0)}
+                    </td>
+                    <td className="border p-2">
+                      {formatRupiah(
+                        (item.qty || 0) * (item.price || 0)
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* TOTAL */}
+            <h3 className="text-right mt-4 font-bold">
+              TOTAL: {formatRupiah(total)}
+            </h3>
+
+            {/* NOTES */}
+            <div className="mt-6">
+              <p className="font-bold">Catatan:</p>
+              <p>{data.notes || "-"}</p>
+            </div>
+
+            {/* FOOTER */}
+            <div className="flex justify-between mt-10 items-end">
+              {data.qris && (
+                <img
+                  src={data.qris}
+                  className="h-24 object-contain"
+                />
+              )}
+
+              {data.signature && (
+                <div className="text-center">
+                  <p>Hormat Kami,</p>
+                  <img
+                    src={data.signature}
+                    className="h-20 mx-auto object-contain"
+                  />
+                  <p>{data.from?.name || "-"}</p>
+                </div>
+              )}
+            </div>
+
+            {/* FOOTNOTE */}
+            <div
+              style={{
+                marginTop: "15px",
+                fontSize: "8px",
+                textAlign: "center",
+              }}
+            >
+              <p>Terima kasih atas kepercayaan Anda 🙏</p>
+              <p>Dibuat oleh: {data.from?.name || "-"}</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
