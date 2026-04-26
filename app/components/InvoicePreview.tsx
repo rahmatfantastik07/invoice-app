@@ -81,7 +81,7 @@ export default function InvoicePreview({ data }: any) {
       <div className="preview-wrapper">
         <div className="preview-scale">
 
-          <div
+         <div
             ref={printRef}
             style={{
               width: "297mm",
@@ -135,6 +135,7 @@ export default function InvoicePreview({ data }: any) {
                 {(data.to?.fromCity || "-")} → {(data.to?.toCity || "-")}
               </p>
             </div>
+
 
             {/* TABLE */}
             <table className="w-full border table-fixed">
