@@ -14,54 +14,57 @@ export default function InvoicePreview({ data }: any) {
     0
   );
 
-  const handleDownloadPDF = async () => {
-    try {
-      const element = printRef.current;
-      if (!element) return;
+const handleDownloadPDF = async () => {
+  try {
+    const element = printRef.current;
+    if (!element) return;
 
-      // 🔥 CLONE BIAR AMAN DI MOBILE
-      const clone = element.cloneNode(true) as HTMLElement;
+    const canvas = await html2canvas(element, {
+      scale: 1,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
 
-      clone.style.width = "297mm";
-      clone.style.minHeight = "210mm";
-      clone.style.transform = "scale(1)";
-      clone.style.position = "fixed";
-      clone.style.top = "0";
-      clone.style.left = "0";
-      clone.style.zIndex = "-1";
-      clone.style.background = "#fff";
+      // 🔥 FIX ERROR lab()
+      onclone: (doc) => {
+        const all = doc.querySelectorAll("*");
 
-      document.body.appendChild(clone);
+        all.forEach((el: any) => {
+          const style = window.getComputedStyle(el);
 
-      const canvas = await html2canvas(clone, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        windowWidth: clone.scrollWidth,
-        windowHeight: clone.scrollHeight,
-      });
+          // 🔥 replace warna modern ke rgb fallback
+          if (style.color.includes("lab") || style.color.includes("oklch")) {
+            el.style.color = "#000";
+          }
 
-      document.body.removeChild(clone);
+          if (style.backgroundColor.includes("lab") || style.backgroundColor.includes("oklch")) {
+            el.style.backgroundColor = "#fff";
+          }
 
-      const imgData = canvas.toDataURL("image/png");
+          if (style.borderColor.includes("lab") || style.borderColor.includes("oklch")) {
+            el.style.borderColor = "#ccc";
+          }
+        });
+      },
+    });
 
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4",
-      });
+    const imgData = canvas.toDataURL("image/jpeg", 0.9);
 
-      const pageWidth = 297;
-      const pageHeight = 210;
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4",
+    });
 
-      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+    pdf.addImage(imgData, "JPEG", 0, 0, 297, 210);
 
-      pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
-    } catch (err) {
-      console.error("PDF ERROR:", err);
-      alert("Gagal download PDF");
-    }
-  };
+    pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
+
+  } catch (err) {
+    console.error("PDF ERROR:", err);
+    alert("Gagal download PDF (color CSS tidak didukung)");
+  }
+};
 
   return (
     <div className="w-full">
@@ -90,7 +93,7 @@ export default function InvoicePreview({ data }: any) {
             className="invoice-print"
           >
 
-            {/* ================= HEADER ================= */}
+            {/* ================= HEADER (FIX PRESISI) ================= */}
             <div
               style={{
                 display: "grid",
@@ -110,23 +113,12 @@ export default function InvoicePreview({ data }: any) {
 
                 <div style={{ marginTop: "16px" }}>
                   <p className="font-bold">Kepada:</p>
-                  <strong>
-                    <p className="text-blue-950">
-                      {data.to?.name || "-"}
-                    </p>
-                  </strong>
+                  <strong><p className="text-blue-950">{data.to?.name || "-"}</p></strong>
                   <p>{data.to?.address || "-"}</p>
                   <p>{data.to?.phone || "-"}</p>
                   <p>{data.to?.email || "-"}</p>
                   <p>
-                    dari{" "}
-                    <strong className="text-blue-950">
-                      {data.to?.fromCity || "-"}
-                    </strong>{" "}
-                    ke{" "}
-                    <strong className="text-blue-950">
-                      {data.to?.toCity || "-"}
-                    </strong>
+                    dari <strong className="text-blue-950">{(data.to?.fromCity || "-")}</strong> ke <strong className="text-blue-950">{(data.to?.toCity || "-")}</strong>
                   </p>
                 </div>
               </div>
@@ -150,6 +142,7 @@ export default function InvoicePreview({ data }: any) {
                 <p>{data.from?.phone || "-"}</p>
                 <p>{data.from?.email || "-"}</p>
               </div>
+
             </div>
 
             {/* TABLE */}
