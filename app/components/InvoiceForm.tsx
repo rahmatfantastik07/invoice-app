@@ -27,7 +27,7 @@ export default function InvoiceForm() {
     notes: "",
     signature: "",
     qris: "",
-    logo: "", // ✅ TAMBAHAN
+    logo: "",
   });
 
   useEffect(() => {
@@ -54,7 +54,6 @@ export default function InvoiceForm() {
     });
   };
 
-  // 🔥 SUPPORT LOGO JUGA
   const handleFile = (
     e: any,
     type: "signature" | "qris" | "logo"
@@ -72,7 +71,25 @@ export default function InvoiceForm() {
     reader.readAsDataURL(file);
   };
 
-  
+  // 🔥 VALIDASI NOMOR HP
+  const handlePhone = (value: string, type: "from" | "to") => {
+    // hanya angka
+    if (!/^\d*$/.test(value)) return;
+
+    // max 12 digit
+    if (value.length > 12) return;
+
+    // harus mulai dari 0 (kalau sudah diisi)
+    if (value.length > 0 && !value.startsWith("0")) return;
+
+    setData({
+      ...data,
+      [type]: {
+        ...data[type],
+        phone: value,
+      },
+    });
+  };
 
   return (
     <div className="grid md:grid-cols-2 gap-6 max-w-350">
@@ -80,7 +97,6 @@ export default function InvoiceForm() {
       {/* ================= FORM ================= */}
       <div className="bg-white p-4 rounded shadow space-y-3">
 
-        {/* NOMOR */}
         <h2 className="font-bold">Nomor Invoice</h2>
         <input
           className="input"
@@ -90,7 +106,6 @@ export default function InvoiceForm() {
           }
         />
 
-        {/* TANGGAL */}
         <h2 className="font-bold">Tanggal</h2>
         <div className="flex gap-2">
           <input
@@ -111,10 +126,8 @@ export default function InvoiceForm() {
           />
         </div>
 
-        {/* PENGIRIM */}
         <h2 className="font-bold">Pengirim</h2>
 
-        {/* 🔥 UPLOAD LOGO */}
         <p className="font-semibold">Upload Logo</p>
         <input
           type="file" className="btn2"
@@ -142,16 +155,15 @@ export default function InvoiceForm() {
             })
           }
         />
+
+        {/* 🔥 VALIDASI HP PENGIRIM */}
         <input
           className="input"
-          placeholder="HP"
-          onChange={(e) =>
-            setData({
-              ...data,
-              from: { ...data.from, phone: e.target.value },
-            })
-          }
+          placeholder="Mulai dengan angka 0"
+          value={data.from.phone}
+          onChange={(e) => handlePhone(e.target.value, "from")}
         />
+
         <input
           className="input"
           placeholder="Email"
@@ -163,7 +175,6 @@ export default function InvoiceForm() {
           }
         />
 
-        {/* PENERIMA */}
         <h2 className="font-bold">Penerima</h2>
         <input
           className="input"
@@ -185,16 +196,15 @@ export default function InvoiceForm() {
             })
           }
         />
+
+        {/* 🔥 VALIDASI HP PENERIMA */}
         <input
           className="input"
-          placeholder="HP"
-          onChange={(e) =>
-            setData({
-              ...data,
-              to: { ...data.to, phone: e.target.value },
-            })
-          }
+          placeholder="Mulai dengan angka 0"
+          value={data.to.phone}
+          onChange={(e) => handlePhone(e.target.value, "to")}
         />
+
         <input
           className="input"
           placeholder="Email"
@@ -229,7 +239,6 @@ export default function InvoiceForm() {
           />
         </div>
 
-        {/* ITEM */}
         <h2 className="font-bold">Tambah Item</h2>
         {data.items.map((item: any, i: number) => (
           <div key={i}>
@@ -265,7 +274,6 @@ export default function InvoiceForm() {
           + Item
         </button>
 
-        {/* NOTES */}
         <textarea
           className="input"
           placeholder="Catatan"
@@ -274,7 +282,6 @@ export default function InvoiceForm() {
           }
         />
 
-        {/* FILE */}
         <p className="font-semibold">Upload Tanda Tangan</p>
         <input
           type="file" className="btn2"
