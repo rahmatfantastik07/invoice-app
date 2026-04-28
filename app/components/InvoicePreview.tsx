@@ -81,7 +81,14 @@ const handleDownloadPDF = async () => {
 };
 
   return (
-    <div className="w-full">
+    <div className="w-full" style={{
+  width: "1122px",
+  minHeight: "794px",
+  padding: "40px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between", // 🔥 KUNCI
+}}>
 
       {/* BUTTON */}
       <div className="mb-2">
@@ -111,7 +118,7 @@ const handleDownloadPDF = async () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "40% 40%",
                 gap: "20px",
                 alignItems: "start",
                 marginBottom: "20px",
@@ -160,41 +167,91 @@ const handleDownloadPDF = async () => {
             </div>
 
             {/* TABLE */}
-            <table className="w-full border table-fixed">
-              <thead>
-                <tr style={{ background: "#e5e7eb" }}>
-                  <th className="border p-2">Deskripsi</th>
-                  <th className="border p-2 w-16">Qty</th>
-                  <th className="border p-2 w-28">Harga</th>
-                  <th className="border p-2 w-28">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(data.items || []).map((item: any, i: number) => (
-                  <tr key={i}>
-                    <td className="border p-2 wrap-break-word">
-                      {item.desc || "-"}
-                    </td>
-                    <td className="border p-2 text-center">
-                      {item.qty || 0}
-                    </td>
-                    <td className="border p-2">
-                      {formatRupiah(item.price || 0)}
-                    </td>
-                    <td className="border p-2">
-                      {formatRupiah(
-                        (item.qty || 0) * (item.price || 0)
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+{/* TABLE */}
+<table
+  style={{
+    width: "100%",
+    borderCollapse: "collapse",
+    tableLayout: "auto",
+    fontSize: "12px",
+  }}
+>
+  <thead>
+    <tr style={{ background: "#e5e7eb" }}>
+      <th style={{ border: "1px solid #ccc", padding: "6px", textAlign: "left" }}>
+        Deskripsi
+      </th>
+      <th style={{ border: "1px solid #ccc", padding: "6px", width: "60px", textAlign: "center" }}>
+        Qty
+      </th>
+      <th style={{ border: "1px solid #ccc", padding: "6px", width: "120px", textAlign: "right" }}>
+        Harga
+      </th>
+      <th style={{ border: "1px solid #ccc", padding: "6px", width: "140px", textAlign: "right" }}>
+        Subtotal
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {(data.items || []).map((item: any, i: number) => (
+      <tr key={i}>
+        <td
+          style={{
+            border: "1px solid #ccc",
+            padding: "6px",
+            wordBreak: "break-word",
+          }}
+        >
+          {item.desc || "-"}
+        </td>
+
+        <td
+          style={{
+            border: "1px solid #ccc",
+            padding: "6px",
+            textAlign: "center",
+          }}
+        >
+          {item.qty || 0}
+        </td>
+
+        <td
+          style={{
+            border: "1px solid #ccc",
+            padding: "6px",
+            textAlign: "right",
+          }}
+        >
+          {formatRupiah(item.price || 0)}
+        </td>
+
+        <td
+          style={{
+            border: "1px solid #ccc",
+            padding: "6px",
+            textAlign: "right",
+          }}
+        >
+          {formatRupiah(
+            (item.qty || 0) * (item.price || 0)
+          )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
             {/* TOTAL */}
-            <h3 className="text-right mt-4 font-bold">
-              TOTAL: {formatRupiah(total)}
-            </h3>
+            <h3
+  style={{
+    textAlign: "right",
+    marginTop: "20px",
+    fontWeight: "bold",
+  }}
+>
+  TOTAL: {formatRupiah(total)}
+</h3>
 
             {/* NOTES */}
             <div className="mt-6">
@@ -203,25 +260,45 @@ const handleDownloadPDF = async () => {
             </div>
 
             {/* FOOTER */}
-            <div className="flex justify-between mt-10 items-end">
-              {data.qris && (
-                <img
-                  src={data.qris}
-                  className="h-24 object-contain"
-                />
-              )}
+           <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "40px",
+    alignItems: "flex-end",
+  }}
+>
 
-              {data.signature && (
-                <div className="text-center">
-                  <p>Hormat Kami,</p>
-                  <img
-                    src={data.signature}
-                    className="h-20 mx-auto object-contain"
-                  />
-                  <p>{data.from?.name || "-"}</p>
-                </div>
-              )}
-            </div>
+  {/* KIRI (QRIS) */}
+  <div>
+    {data.qris && (
+      <img
+        src={data.qris}
+        style={{ height: "90px", objectFit: "contain" }}
+      />
+    )}
+  </div>
+
+  {/* KANAN (TTD) */}
+  <div style={{ textAlign: "center", width: "200px" }}>
+    <p>Hormat Kami,</p>
+
+    {data.signature && (
+      <img
+        src={data.signature}
+        style={{
+          height: "80px",
+          objectFit: "contain",
+          margin: "8px auto",
+          display: "block",
+        }}
+      />
+    )}
+
+    <p>{data.from?.name || "-"}</p>
+  </div>
+
+</div>
 
             {/* FOOTNOTE */}
             <div
