@@ -19,28 +19,40 @@ const handleDownloadPDF = async () => {
     const element = printRef.current;
     if (!element) return;
 
-    const canvas = await html2canvas(element, {
-      scale: 1,
+    // 🔥 CLONE BIAR TIDAK TERPENGARUH RESPONSIVE / SCALE
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    clone.style.width = "1122px";     // 🔥 paksa A4 landscape
+    clone.style.minHeight = "794px";
+    clone.style.transform = "scale(1)";
+    clone.style.background = "#fff";
+
+    // 🔥 taruh di luar layar (aman mobile)
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "absolute";
+    wrapper.style.top = "-99999px";
+    wrapper.style.left = "-99999px";
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    const canvas = await html2canvas(clone, {
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: "#ffffff",
 
-      // 🔥 FIX ERROR lab()
+      // 🔥 FIX COLOR ERROR (lab / oklch)
       onclone: (doc) => {
-        const all = doc.querySelectorAll("*");
-
-        all.forEach((el: any) => {
+        doc.querySelectorAll("*").forEach((el: any) => {
           const style = window.getComputedStyle(el);
 
-          // 🔥 replace warna modern ke rgb fallback
           if (style.color.includes("lab") || style.color.includes("oklch")) {
             el.style.color = "#000";
           }
-
           if (style.backgroundColor.includes("lab") || style.backgroundColor.includes("oklch")) {
             el.style.backgroundColor = "#fff";
           }
-
           if (style.borderColor.includes("lab") || style.borderColor.includes("oklch")) {
             el.style.borderColor = "#ccc";
           }
@@ -48,7 +60,9 @@ const handleDownloadPDF = async () => {
       },
     });
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.9);
+    document.body.removeChild(wrapper);
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
 
     const pdf = new jsPDF({
       orientation: "landscape",
@@ -61,8 +75,8 @@ const handleDownloadPDF = async () => {
     pdf.save(`${data.invoiceNumber || "invoice"}.pdf`);
 
   } catch (err) {
-    console.error("PDF ERROR:", err);
-    alert("Gagal download PDF (color CSS tidak didukung)");
+    console.error("PDF ERROR FINAL:", err);
+    alert("Gagal download PDF (render gagal di device ini)");
   }
 };
 
@@ -97,7 +111,7 @@ const handleDownloadPDF = async () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "40% 40%",
+                gridTemplateColumns: "1fr 1fr",
                 gap: "20px",
                 alignItems: "start",
                 marginBottom: "20px",
