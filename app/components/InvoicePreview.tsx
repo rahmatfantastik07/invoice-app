@@ -118,7 +118,7 @@ const handleDownloadPDF = async () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "40% 40%",
+                gridTemplateColumns: "1fr 1fr",
                 gap: "20px",
                 alignItems: "start",
                 marginBottom: "20px",
